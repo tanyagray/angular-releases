@@ -25,7 +25,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    
+      
+      # Install npm dependencies
+      - name: Install
+        run: npm i
+
+      
       # Build the Angular project
       - name: Build
         run: npm run build
