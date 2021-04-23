@@ -17,6 +17,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       
+      # Get the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
       # Install npm dependencies
       - name: Install
         run: npm i
