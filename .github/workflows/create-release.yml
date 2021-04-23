@@ -10,7 +10,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  verify:
+  release:
 
     runs-on: ubuntu-latest
 
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Install
+      - name: Install Dependencies
         run: npm i
       
       - name: Bump Version
@@ -29,18 +29,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Validate Release
+        id: validate
         if: ${{ steps.semantic.outputs.new_release_published == 'false' }}
         run: |
           echo "Nothing to release: There are no releasable commits."
           echo "Ensure your recent changes include a fix, feature, or breaking change."
           exit 1
 
-      - name: Build
+      - name: Build Angular App
         run: npm run build
-
-      - name: Create Release Asset # This would actually build your project, using zip for an example artifact
-        run: |
-          zip -r theme.zip dist/angular-project
 
       - name: Create GitHub Release
         id: create_release
@@ -52,6 +49,10 @@ jobs:
           body: ${{ steps.semantic.outputs.new_release_notes }}
           draft: true
           prerelease: false
+          
+      - name: Create Release Asset
+        run: |
+          zip -r theme.zip dist/angular-project
 
       # Upload artifact to the release
       - name: Upload Release Asset
