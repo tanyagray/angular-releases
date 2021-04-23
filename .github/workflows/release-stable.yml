@@ -31,9 +31,9 @@ jobs:
         run: npm run build
 
       # Create the release asset
-      - name: Create artifact # This would actually build your project, using zip for an example artifact
+      - name: Create Release Asset # This would actually build your project, using zip for an example artifact
         run: |
-          zip -r theme.zip dist/theme
+          zip -r theme.zip dist/angular-project
 
       # Create GitHub Release entry
       - name: Create Release
