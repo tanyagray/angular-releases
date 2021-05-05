@@ -68,10 +68,9 @@ jobs:
           asset_content_type: application/zip
       
       - name: Configure Deployment
-        uses: schdck/create-env-json@v1
+        uses: tanyagray/create-json-string@1.0.0
         id: deployment_config
         with:
-          file-name: 'deployment-config.json'
           slot: "UI"
           alias: "theme_prerelease"
           artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
@@ -84,6 +83,6 @@ jobs:
           auto_merge: false
           production_environment: false
           environment: staging
-          payload: ${{ fromJson(steps.deployment_config.outputs.full-path) }}
+          payload: ${{ steps.deployment_config.outputs.json_string }}
           
           
