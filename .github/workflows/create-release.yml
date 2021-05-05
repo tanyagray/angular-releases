@@ -68,7 +68,7 @@ jobs:
           asset_content_type: application/zip
       
       - name: Configure Deployment
-        uses: tanyagray/create-json-string@1.0.0
+        uses: tanyagray/create-json-string@1.1.0
         id: deployment_config
         with:
           slot: "UI"
