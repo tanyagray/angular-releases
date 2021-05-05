@@ -1,12 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Deploy Prerelease
+name: Deploy
 
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   release:
-    types: [ prereleased ]
+    types: [ released ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,30 +23,12 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
-        run: echo Prereleasing!
+        run: echo Releasing!
         
       - uses: chrnorm/deployment-action@releases/v1
         name: Create GitHub Deployment
         id: deployment
         with:
           token: "${{ github.token }}"
-          target_url: https://theme-prerelease.sm.cloud
-          environment: staging
-          
-      - name: Update deployment status (success)
-        if: success()
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: "${{ github.token }}"
-          target_url: http://my-app-url.com
-          state: "success"
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-
-      - name: Update deployment status (failure)
-        if: failure()
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: "${{ github.token }}"
-          target_url: http://my-app-url.com
-          state: "failure"
-          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          target_url: https://theme.sm.cloud
+          environment: production
