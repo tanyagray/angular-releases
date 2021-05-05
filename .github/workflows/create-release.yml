@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Create Release
+name: Publish Prerelease
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -57,7 +57,7 @@ jobs:
 
       # Upload artifact to the release
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload_release_asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -66,3 +66,24 @@ jobs:
           asset_path: ./theme.zip
           asset_name: theme.zip
           asset_content_type: application/zip
+      
+      - name: Configure Deployment
+        uses: schdck/create-env-json@v1
+        id: deployment_config
+        with:
+          file-name: 'deployment-config.json'
+          slot: "UI"
+          alias: "theme_prerelease"
+          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+      
+      - name: Deploy for Soul Files
+        uses: avakar/create-deployment@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_merge: false
+          production_environment: false
+          environment: staging
+          payload: ${{ fromJson(steps.deployment_config.outputs.full-path) }}
+          
+          
