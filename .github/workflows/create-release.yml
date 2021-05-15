@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm i
-      
+
       - name: Bump Version
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
@@ -50,10 +50,11 @@ jobs:
           body: ${{ steps.semantic.outputs.new_release_notes }}
           draft: false
           prerelease: true
-          
+
       - name: Create Release Asset
         run: |
-          zip -r theme.zip dist/angular-project
+          cd dist/angular-project
+          zip -r theme.zip .
 
       # Upload artifact to the release
       - name: Upload Release Asset
@@ -66,7 +67,7 @@ jobs:
           asset_path: ./theme.zip
           asset_name: theme.zip
           asset_content_type: application/zip
-      
+
       - name: Configure Deployment
         uses: tanyagray/create-json-string@1.1.0
         id: deployment_config
@@ -74,7 +75,7 @@ jobs:
           slot: "UI"
           alias: "theme_prerelease"
           artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
-      
+
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
         env:
@@ -84,5 +85,5 @@ jobs:
           production_environment: false
           environment: staging
           payload: ${{ steps.deployment_config.outputs.json_string }}
-          
-          
+
+
