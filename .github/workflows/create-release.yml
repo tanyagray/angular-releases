@@ -55,6 +55,7 @@ jobs:
         run: |
           cd dist/angular-project
           zip -r theme.zip .
+          mv theme.zip ../../theme.zip
 
       # Upload artifact to the release
       - name: Upload Release Asset
