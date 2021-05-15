@@ -83,6 +83,6 @@ jobs:
           auto_merge: false
           production_environment: false
           environment: staging
-          payload: ${{ steps.deployment_config.outputs.json_string }}
+          payload: ${{ fromJSON(steps.deployment_config.outputs.json_string) }}
           
           
