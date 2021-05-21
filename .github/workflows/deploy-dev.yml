@@ -48,13 +48,13 @@ jobs:
         uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
-          tag_name: dev # tag name to delete
+          tag_name: dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create Tag `dev`
         run: |
-          git tag dev
+          git tag dev --force
           git push origin dev
       
       - name: Create GitHub Release
