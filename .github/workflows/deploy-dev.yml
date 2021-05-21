@@ -25,13 +25,6 @@ jobs:
         id: semantic
         with:
           dry_run: true
-          branches: |    
-            [
-              {
-                name: 'master', 
-                prerelease: true
-              }
-            ]
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
