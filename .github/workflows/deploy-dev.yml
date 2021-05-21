@@ -22,10 +22,49 @@ jobs:
       
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v2
+        id: upload_build_artifact
         with:
           name: theme.zip
           path: dist/angular-project/
           retention-days: 7
+          
+      - name: Delete Current Dev Release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: dev # tag name to delete
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          release_name: Theme Dev
+          tag_name: dev
+          body: ${{ github.event.head_commit.message }}
+          draft: false
+          prerelease: true
+
+      - name: Create Release Asset
+        run: |
+          cd dist/angular-project
+          zip -r theme.zip .
+          mv theme.zip ../../theme.zip
+
+      # Upload artifact to the release
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./theme.zip
+          asset_name: theme.zip
+          asset_content_type: application/zip
       
       - name: Configure Deployment
         uses: tanyagray/create-json-string@1.1.0
@@ -33,7 +72,7 @@ jobs:
         with:
           slot: "UI"
           alias: "theme_dev"
-          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+          artifact: ${{ steps.upload_build_artifact.outputs.browser_download_url }}
           
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
@@ -44,3 +83,5 @@ jobs:
           production_environment: false
           environment: dev
           payload: ${{ steps.deployment_config.outputs.json_string }}
+          
+          
