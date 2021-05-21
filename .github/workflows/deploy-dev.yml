@@ -37,10 +37,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Create Tag `dev`
-        uses: tvdias/github-tagger@v0.0.2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          tag: dev
+        run: |
+          git tag dev
+          git push origin dev
       
       - name: Create GitHub Release
         id: create_release
