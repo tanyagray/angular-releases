@@ -1,4 +1,4 @@
-name: [Auto] Deploy Dev
+name: Auto-Deploy Dev
 
 on:
   push:
@@ -19,13 +19,14 @@ jobs:
         
       - name: Build Angular App
         run: npm run build
-        
-      - name: Create Release Asset
-        run: |
-          cd dist/angular-project
-          zip -r theme.zip .
-          mv theme.zip ../../theme.zip
-          
+      
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: theme.zip
+          path: dist/angular-project/
+          retention-days: 7
+      
       - name: Configure Deployment
         uses: tanyagray/create-json-string@1.1.0
         id: deployment_config
