@@ -16,18 +16,25 @@ jobs:
 
       - name: Install Dependencies
         run: npm i
-        
-      - name: Build Angular App
-        run: npm run build
       
       - name: Bump Version
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
         with:
-          dry_run: true
+          branches: |
+            [
+              {
+                name: 'master',
+                channel: 'beta',
+                prerelease: 'beta'
+              }
+            ]
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
+      - name: Build Angular App
+        run: npm run build
+      
       - name: Validate Release
         id: validate
         if: ${{ steps.semantic.outputs.new_release_published == 'false' }}
@@ -63,7 +70,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          release_name: Theme Dev
+          release_name: Theme v${{ steps.semantic.outputs.new_release_version }}
           tag_name: dev
           body: ${{ steps.semantic.outputs.new_release_notes }}
           draft: false
