@@ -80,7 +80,7 @@ jobs:
         with:
           slot: "UI"
           alias: "theme_dev"
-          artifact: ${{ steps.upload_build_artifact.outputs.browser_download_url }}
+          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
           
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
