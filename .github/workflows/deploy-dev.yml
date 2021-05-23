@@ -21,15 +21,7 @@ jobs:
         uses: cycjimmy/semantic-release-action@v2
         id: semantic
         with:
-          branches: |
-            [
-              '+([0-9])?(.{+([0-9]),x}).x',
-              {
-                name: 'master',
-                channel: 'beta',
-                prerelease: 'beta'
-              }
-            ]
+          dry_run: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
