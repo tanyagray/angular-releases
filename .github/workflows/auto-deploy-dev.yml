@@ -1,0 +1,92 @@
+name: [Auto] Deploy Dev
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm i
+      
+      - name: Bump Version
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Angular App
+        run: npm run build
+      
+      - name: Validate Release
+        id: validate
+        if: ${{ steps.semantic.outputs.new_release_published == 'false' }}
+        run: |
+          echo "Nothing to release: There are no releasable commits."
+          echo "Ensure your recent changes include a fix, feature, or breaking change."
+          exit 1
+        
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v2
+        id: upload_build_artifact
+        with:
+          name: theme.zip
+          path: dist/angular-project/
+          retention-days: 7
+          
+      - uses: actions/download-artifact@v2
+        id: build_artifact
+        with:
+          name: theme.zip
+      
+      - name: Update release
+        uses: johnwbyrd/update-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release: Theme v${{ steps.semantic.outputs.new_release_version }}-dev
+          body: ${{ steps.semantic.outputs.new_release_notes }}
+          tag: dev
+          draft: false
+          prerelease: true
+      
+      # Upload artifact to the release
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ${{ steps.build_artifact.outputs.download-path }}
+          asset_name: theme.zip
+          asset_content_type: application/zip
+      
+      - name: Configure Deployment
+        uses: tanyagray/create-json-string@1.1.0
+        id: deployment_config
+        with:
+          slot: "UI"
+          alias: "theme_dev"
+          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+          
+      - name: Deploy for Soul Files
+        uses: avakar/create-deployment@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_merge: false
+          production_environment: false
+          environment: dev
+          payload: ${{ steps.deployment_config.outputs.json_string }}
+          
+          
