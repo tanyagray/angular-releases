@@ -22,7 +22,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ GITHUB_REF }}
+          tag: $GITHUB_REF
           
       - name: Validate Deployment
         id: validate
