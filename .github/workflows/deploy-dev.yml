@@ -53,7 +53,7 @@ jobs:
           release_name: Theme v${{ steps.semantic.outputs.new_release_version }}
           body: ${{ steps.semantic.outputs.new_release_notes }}
           tag_name: ${{ steps.semantic.outputs.new_release_version }}
-          draft: false
+          draft: true
           prerelease: true
 
       - name: Create Release Asset
