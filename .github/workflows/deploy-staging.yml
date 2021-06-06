@@ -1,0 +1,51 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy Staging
+
+# Controls when the action will run. 
+on:
+  release:
+    types: [published]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      
+      - uses: cardinalby/git-get-release-action@v1.1
+        id: get_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ GITHUB_REF }}
+          
+      - name: Validate Deployment
+        id: validate
+        if: ${{ steps.get_release.outputs.prerelease == 'false' }}
+        run: |
+          echo "Release state is `prerelease: false`"
+          echo "Only a prerelease can be deployed to the staging environment."
+          exit 1
+      
+      - name: Configure Deployment
+        uses: tanyagray/create-json-string@1.1.0
+        id: deployment_config
+        with:
+          slot: UI
+          alias: theme_prerelease
+          artifact: https://github.com/tanyagray/angular-releases/releases/download/${{ GITHUB_REF }}/theme.zip
+          
+      - name: Deploy for Soul Files
+        uses: avakar/create-deployment@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_merge: false
+          production_environment: false
+          environment: staging
+          payload: ${{ steps.deployment_config.outputs.json_string }}
