@@ -50,7 +50,7 @@ jobs:
           name: theme.zip
       
       - name: Update release
-        uses: johnwbyrd/update-release@v1
+        uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release: Theme v${{ steps.semantic.outputs.new_release_version }}-dev
