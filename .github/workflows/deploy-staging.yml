@@ -38,7 +38,7 @@ jobs:
         with:
           slot: UI
           alias: theme_prerelease
-          artifact: https://github.com/tanyagray/angular-releases/releases/download/${{ GITHUB_REF }}/theme.zip
+          artifact: https://github.com/tanyagray/angular-releases/releases/download/${{ github.ref }}/theme.zip
           
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
