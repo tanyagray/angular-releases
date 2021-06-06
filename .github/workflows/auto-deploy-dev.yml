@@ -1,4 +1,4 @@
-name: [Auto] Deploy Dev
+name: Auto Deploy Dev
 
 on:
   push:
