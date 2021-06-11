@@ -42,6 +42,11 @@ jobs:
           zip -r theme.zip .
           mv theme.zip ../../theme.zip
 
+      - name: Delete Existing Drafts
+        uses: hugo19941994/delete-draft-releases@v0.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Draft Release
         id: create_release
         uses: actions/create-release@v1
