@@ -46,16 +46,9 @@ jobs:
         uses: johnwbyrd/update-release@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release: Theme v${{ steps.semantic.outputs.new_release_version }}-dev
+          release: Theme v${{ steps.semantic.outputs.new_release_version }}
           body: ${{ steps.semantic.outputs.new_release_notes }}
-          tag: dev
+          tag: v${{ steps.semantic.outputs.new_release_version }}
           files: theme.zip
           draft: true
           prerelease: true
-
-      - name: Update Dev Tag
-        uses: richardsimko/update-tag@v1
-        with:
-          tag_name: dev
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
