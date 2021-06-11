@@ -52,3 +52,10 @@ jobs:
           files: theme.zip
           draft: false
           prerelease: true
+
+      - name: Update Dev Tag
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
