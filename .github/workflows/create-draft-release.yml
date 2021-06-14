@@ -77,7 +77,9 @@ jobs:
           slot: UI
           alias: theme_dev
           version: v${{ steps.semantic.outputs.new_release_version }}
-          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+          repo: tanyagray/angular-releases
+          asset_id: ${{ steps.upload_release_asset.outputs.id }}
+          asset_url: ${{ steps.upload_release_asset.outputs.browser_download_url }}
 
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
