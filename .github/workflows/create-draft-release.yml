@@ -61,7 +61,7 @@ jobs:
 
       - name: Upload Release Asset
         id: upload_release_asset
-        uses: tanyagray/upload-release-asset@1.0.0
+        uses: tanyagray/upload-release-asset@v1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -77,9 +77,7 @@ jobs:
           slot: UI
           alias: theme_dev
           version: v${{ steps.semantic.outputs.new_release_version }}
-          repo: tanyagray/angular-releases
-          asset_id: ${{ steps.upload_release_asset.outputs.id }}
-          asset_url: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+          asset_url: ${{ steps.upload_release_asset.outputs.url }}
 
       - name: Deploy for Soul Files
         uses: avakar/create-deployment@v1.0.2
