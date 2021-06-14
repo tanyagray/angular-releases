@@ -36,12 +36,6 @@ jobs:
       - name: Build Angular App
         run: npm run build
 
-      - name: Create Release Asset
-        run: |
-          cd dist/angular-project
-          zip -r theme.zip .
-          mv theme.zip ../../theme.zip
-
       - name: Delete Existing Drafts
         uses: hugo19941994/delete-draft-releases@v0.1.0
         env:
@@ -58,3 +52,39 @@ jobs:
           body: ${{ steps.semantic.outputs.new_release_notes }}
           draft: true
           prerelease: true
+
+      - name: Create Release Asset
+        run: |
+          cd dist/angular-project
+          zip -r theme.zip .
+          mv theme.zip ../../theme.zip
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./theme.zip
+          asset_name: theme.zip
+          asset_content_type: application/zip
+
+      - name: Configure Deployment
+        uses: tanyagray/create-json-string@1.1.0
+        id: deployment_config
+        with:
+          slot: UI
+          alias: theme_dev
+          version: v${{ steps.semantic.outputs.new_release_version }}
+          artifact: ${{ steps.upload_release_asset.outputs.browser_download_url }}
+
+      - name: Deploy for Soul Files
+        uses: avakar/create-deployment@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_merge: false
+          production_environment: false
+          environment: dev
+          payload: ${{ steps.deployment_config.outputs.json_string }}
