@@ -86,5 +86,6 @@ jobs:
         with:
           auto_merge: false
           production_environment: false
+          required_contexts: ''
           environment: dev
           payload: ${{ steps.deployment_config.outputs.json_string }}
