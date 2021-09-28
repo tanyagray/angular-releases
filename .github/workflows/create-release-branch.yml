@@ -1,0 +1,37 @@
+name: Create Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_hash:
+        description: 'The commit hash to create a release candidate from'
+        required: false
+
+jobs:
+  create-release-branch:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.commit_hash }}
+
+      - name: Install Dependencies
+        run: npm i
+
+      - name: Bump Version
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: peterjgrainger/action-create-branch@v2.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: v${{ steps.semantic.outputs.new_release_version }}
