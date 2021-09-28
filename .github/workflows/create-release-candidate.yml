@@ -6,7 +6,6 @@ on:
       commit_hash:
         description: 'The commit hash to create a release candidate from'
         required: false
-        default: 'HEAD'
 
 jobs:
 
