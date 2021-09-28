@@ -1,4 +1,4 @@
-name: Create Draft Release [Auto]
+name: Create Release Draft [Auto]
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
 
-  build:
+  draftRelease:
 
     runs-on: ubuntu-latest
 
