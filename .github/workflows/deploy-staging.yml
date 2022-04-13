@@ -6,7 +6,7 @@ name: Deploy Staging [Auto]
 
 on:
   release:
-    types: [prereleased]
+    types: [published]
 
 jobs:
 

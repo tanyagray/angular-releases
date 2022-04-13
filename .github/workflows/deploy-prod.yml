@@ -1,0 +1,46 @@
+# requires a tag, or a release id
+# grabs the asset
+# publishes it
+
+name: Deploy Prod [Auto]
+
+on:
+  release:
+    types: [released]
+
+jobs:
+
+  deploy-staging:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: cardinalby/git-get-release-action@v1.1
+        id: get_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Configure Deployment
+        uses: tanyagray/create-json-string@1.1.0
+        id: deployment_config
+        with:
+          slot: UI
+          alias: theme_stable
+          version: v${{ steps.get_release.outputs.tag_name }}
+          asset_url: ${{ steps.get_release.outputs.assets_url }}/theme.zip
+
+      - name: Deploy to Staging
+        uses: avakar/create-deployment@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          auto_merge: false
+          production_environment: true
+          required_contexts: ''
+          environment: prod
+          payload: ${{ steps.deployment_config.outputs.json_string }}
