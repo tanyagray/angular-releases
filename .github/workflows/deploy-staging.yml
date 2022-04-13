@@ -16,13 +16,21 @@ jobs:
 
     steps:
 
-      - uses: cardinalby/git-get-release-action@v1.1
+      - name: Get Release ${{ github.ref }}
+        uses: cardinalby/git-get-release-action@v1.1
         id: get_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ github.ref }}
-          prerelease: true
+
+      - name: Validate Deployment
+        id: validate
+        if: ${{ steps.get_release.outputs.prerelease == 'false' }}
+        run: |
+          echo "Release state is `prerelease: false`"
+          echo "Only a prerelease can be deployed to the staging environment."
+          exit 1
 
       - name: Configure Deployment
         uses: tanyagray/create-json-string@1.1.0
