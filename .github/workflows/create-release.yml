@@ -1,0 +1,83 @@
+# build
+# test
+# create release
+# upload asset
+# bump version tag
+# notify slack "release was created. release to staging here: X"
+
+
+name: Create Release Draft [Manual]
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_sha:
+        description: 'Git commit SHA to use'
+        required: false
+        default: ''
+
+jobs:
+
+  create-release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm i
+
+      - name: Bump Version
+        uses: cycjimmy/semantic-release-action@v2
+        id: semantic
+        with:
+          dry_run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate Release
+        id: validate
+        if: ${{ steps.semantic.outputs.new_release_published == 'false' }}
+        run: |
+          echo "Nothing to release: There are no releasable commits."
+          echo "Ensure your recent changes include a fix, feature, or breaking change."
+          exit 1
+
+      - name: Build Angular App
+        run: npm run build
+
+      - name: Delete Existing Drafts
+        uses: hugo19941994/delete-draft-releases@v0.1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v${{ steps.semantic.outputs.new_release_version }}
+          release_name: Theme v${{ steps.semantic.outputs.new_release_version }}
+          body: ${{ steps.semantic.outputs.new_release_notes }}
+          draft: true
+          prerelease: true
+
+      - name: Create Release Asset
+        run: |
+          cd dist/angular-project
+          zip -r theme.zip .
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        uses: tanyagray/upload-release-asset@v1.1.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: dist/angular-project/theme.zip
+          asset_name: theme.zip
+          asset_content_type: application/zip

@@ -30,8 +30,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: peterjgrainger/action-create-branch@v2.0.1
+      - name: Create Branch
+        uses: peterjgrainger/action-create-branch@v2.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: v${{ steps.semantic.outputs.new_release_version }}
+          branch: v${{ steps.semantic.outputs.new_release_major_version }}.x
