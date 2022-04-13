@@ -22,23 +22,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ github.ref }}
-
-      - name: Validate Deployment
-        id: validate
-        if: ${{ steps.get_release.outputs.prerelease == 'false' }}
-        run: |
-          echo "Release state is `prerelease: false`"
-          echo "Only a prerelease can be deployed to the staging environment."
-          exit 1
+          draft: false
+          prerelease: true
 
       - name: Configure Deployment
         uses: tanyagray/create-json-string@1.1.0
         id: deployment_config
         with:
           slot: UI
-          alias: theme_dev
-          version: v${{ steps.semantic.outputs.new_release_version }}
-          asset_url: ${{ steps.upload_release_asset.outputs.url }}
+          alias: theme_prerelease
+          version: v${{ steps.get_release.outputs.tag_name }}
+          asset_url: ${{ steps.get_release.outputs.assets_url }}/theme.zip
 
       - name: Deploy to Staging
         uses: avakar/create-deployment@v1.0.2
@@ -48,5 +42,5 @@ jobs:
           auto_merge: false
           production_environment: false
           required_contexts: ''
-          environment: dev
+          environment: staging
           payload: ${{ steps.deployment_config.outputs.json_string }}
