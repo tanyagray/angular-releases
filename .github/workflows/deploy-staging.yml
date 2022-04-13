@@ -17,12 +17,11 @@ jobs:
     steps:
 
       - name: Get Release ${{ github.ref }}
-        uses: cardinalby/git-get-release-action@v1.1
         id: get_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: kaliber5/action-get-release@v1
         with:
-          tag: ${{ github.ref }}
+          token: ${{ github.token }}
+          tag_name: ${{ github.ref }}
 
       - name: Validate Deployment
         id: validate
