@@ -22,7 +22,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ github.ref }}
-          draft: false
           prerelease: true
 
       - name: Configure Deployment
